@@ -1,0 +1,27 @@
+body {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  font-family: 'Fira Sans', sans-serif;
+  font-weight: 300;
+}
+
+button {
+  height: 35px;
+  width: 35px;
+  margin-top: 5px;
+  border: none;
+  outline: none;
+}
+
+button:focus {
+  opacity: .5;
+}
+
+#color-btns {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin: 5px 0;
+}
+

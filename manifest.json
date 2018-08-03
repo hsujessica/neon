@@ -1,0 +1,32 @@
+ {
+  "name": "Neon",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "highlighter extension for chrome",
+  "author": "Jessica",
+  "permissions": ["storage", "unlimitedStorage", "contextMenus", "activeTab", "declarativeContent"],
+  "background": {
+    "scripts": ["background.js", "db.js"],
+    "persistent": false
+  },
+  "options_page": "options.html",
+  "content_scripts": [{
+    "js": ["popup.js"],
+    "matches": ["http://*/*"]
+  }],
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "images/neon16.png",
+      "32": "images/neon32.png",
+      "48": "images/neon48.png",
+      "128": "images/neon128.png"
+    }
+  },
+  "icons": {
+    "16": "images/neon16.png",
+    "32": "images/neon32.png",
+    "48": "images/neon48.png",
+    "128": "images/neon128.png"
+  }
+ }

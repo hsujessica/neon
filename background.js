@@ -3,6 +3,15 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
+chrome.runtime.onMessage.addListener(
+function(request, sender, sendResponse) {
+  console.log(sender.tab ?
+              "from a content script:" + sender.tab.url :
+              "from the extension");
+  if (request.greeting == "hello")
+    sendResponse({farewell: "goodbye"});
+});
+
 // chrome.storage.local.get('signed_in', function(data) {
 //   if (data.signed_in) {
 //     chrome.browserAction.setPopup({popup: 'popup.html'});

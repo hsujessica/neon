@@ -32,8 +32,9 @@ What opens when you click on the icon.
 
 # Content Script
 
-Script that works with the content loaded in browser. JS and CSS can be added as a script or file, and executes in the context of the page.
+Script that works with the content loaded in browser, meaning you can modify the DOM. JS and CSS can be added as a script or file, and executes in the context of the page.
 Can't call functions that were defined in extension's background page. Need to use message API to communicate. Content script and background are running separate from each other.
+But content scrips cannot use most of Chrome browser API
 
 ```js
 "content_scripts": [{

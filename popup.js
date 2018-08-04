@@ -29,7 +29,6 @@ function switchColor(event) {
     activeColor.setAttribute('value', newColor);
     activeColor.style.backgroundColor = newColor;
   });
-  console.log(activeColor);
   chrome.tabs.query({
     active: true,
     currentWindow: true

@@ -3,13 +3,28 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
+chrome.tabs.query({
+  active: true,
+  currentWindow: true
+}, function (tabs) {
+  chrome.tabs.executeScript({
+    file: "./highlight.js",
+    allFrames: true
+  });
+});
+
+chrome.storage.sync.get('color', function (data) {
+  activeColor.style.backgroundColor = data.color;
+  activeColor.setAttribute('value', data.color);
+});
+
 chrome.runtime.onMessage.addListener(
 function(request, sender, sendResponse) {
   console.log(sender.tab ?
               "from a content script:" + sender.tab.url :
               "from the extension");
-  if (request.greeting == "hello")
-    sendResponse({farewell: "goodbye"});
+  if (request.msg == "color")
+    sendResponse({color: 'active' + activeColor});
 });
 
 // chrome.storage.local.get('signed_in', function(data) {

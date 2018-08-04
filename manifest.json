@@ -11,7 +11,7 @@
   },
   "options_page": "options.html",
   "content_scripts": [{
-    "js": ["popup.js"],
+    "js": ["highlight.js", "db.js"],
     "matches": ["http://*/*"]
   }],
   "browser_action": {

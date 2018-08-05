@@ -1,30 +1,6 @@
 let activeColor;
-let text;
-
-// need to override after initial load
+// need to override highlight color after initial page load
 // window.onload = () => {
-//   chrome.tabs.query({
-//     active: true,
-//     currentWindow: true
-//   }, function (tabs) {
-//     chrome.tabs.executeScript(
-//         tabs[0].id,
-//         {code: `let style = document.createElement('style');
-//           document.head.appendChild(style);
-//           style.sheet.insertRule("::selection {background-color: ${newColor}}")
-//           function getHighlightedText () {
-//             let text = '';
-//             if (window.getSelection()) {
-//               text = window.getSelection().toString();
-//             }
-//             return text;
-//           }
-//           document.addEventListener('selectionchange', function () {
-//               let text = getHighlightedText();
-//               console.log(text);
-//           });`}
-//     );
-//   });
 // };
 
 // chrome.runtime.sendMessage({msg: "color"}, function (response) {
@@ -37,11 +13,11 @@ chrome.storage.sync.get('color', function (data) {
 });
 
 function highlight ()  {
+  let text = '';
   let style = document.createElement('style');
   document.head.appendChild(style);
   style.sheet.insertRule(`::selection {background-color: ${activeColor}}`)
   function getHighlightedText () {
-    let text = '';
     if (window.getSelection()) {
       text = window.getSelection().toString();
     }
@@ -54,13 +30,27 @@ function highlight ()  {
   document.addEventListener('keypress', function (event) {
     if (event.key === 'n') {
       let text = getHighlightedText();
-      console.log(text);
-      saveHighlight(text);
+      let note = createNote();
+      note.addEventListener('keypress', function (event) {
+        if (event.key === 'Enter') {
+          saveHighlight(text, note.value);
+          let body = document.getElementsByTagName('body')[0];
+          body.removeChild(note);
+        }
+      });
     }
   });
 }
 
-function saveHighlight (text) {
+function createNote () {
+  let note = document.createElement('textarea');
+  note.style.cssText = 'position:fixed; rows:5; top:10px; left: 5px; width:200px; height:200px; background-color: rgba(243,243,243,.7)';
+  let body = document.getElementsByTagName('body')[0];
+  body.appendChild(note);
+  return note;
+}
+
+function saveHighlight (text, note) {
   let request = indexedDB.open('highlights', 3);
   request.onerror = function (event) {
     alert('IndexedDB?!');
@@ -71,15 +61,14 @@ function saveHighlight (text) {
     // NEED TO HANDLE UPDATE
     // objectStore.transaction.oncomplete = function (event) {
     //   let highlightsObjectStore = db.transaction('highlights', 'readwrite').objectStore("highlights");
-    //   let highlight =   {color: activeColor, text: text, url: window.location.href, timestamp: new Date()};
+    //   let highlight =   {color: activeColor, text: text, note: note, url: window.location.href, timestamp: new Date()};
     //   highlightsObjectStore.add(highlight);
     // };
   };
   request.onsuccess = function (event) {
     db = event.target.result;
-    let highlightsObjectStore = db.transaction('highlights', 'readwrite').objectStore("highlights");
-    let highlight =   {color: activeColor, text: text, url: window.location.href, timestamp: new Date()};
-    console.log(highlight)
+    let highlightsObjectStore = db.transaction('highlights', 'readwrite').objectStore('highlights');
+    let highlight = {color: activeColor, text: text, note: note, url: window.location.href, timestamp: new Date()};
     highlightsObjectStore.add(highlight);
   }
 }

@@ -1,14 +1,26 @@
   <!DOCTYPE html>
   <html>
     <head>
+      <link href="main.css" type="text/css" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css?family=Fira+Sans:300" rel="stylesheet">
     </head>
     <body>
-      <div>
-        <p>Select your highlighter color</p>
-      </div>
-      <div id="buttonDiv">
-      </div>
-      <div id="saves">
+      <div id="option-body">
+        <div id="buttonDiv">
+          <p>Select your highlighter color</p>
+        </div>
+        <div>
+          <p>Saved Highlights</p>
+          <table>
+            <tbody id="saves">
+              <tr>
+                <th>Text</th>
+                <th>Source</th>
+                <th>Time</th>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </body>
     <script src="options.js"></script>

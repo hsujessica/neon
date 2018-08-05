@@ -3,8 +3,8 @@ if (!window.indexedDB) {
 }
 
 const highlights = [
-  {color: '#ffff22', text: 'Billasrfgbjyhngfedvjatwedfv', url: 'google.com', timestamp: new Date()},
-  {color: '#ffff22', text: 'asdgaerdvjatwedfv', url: 'fb.com', timestamp: new Date()},
+  {color: '#ffff22', text: 'Billasrfgbjyhngfedvjatwedfv', url: 'https://google.com', timestamp: new Date()},
+  {color: '#ffff22', text: 'asdgaerdvjatwedfv', url: 'https://fb.com', timestamp: new Date()},
 ];
 
 let db;

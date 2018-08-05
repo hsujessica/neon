@@ -1,4 +1,4 @@
-let activeColor = document.getElementById('activeColor');
+let activeColor = document.getElementById('active-color');
 let colors = document.getElementsByClassName('color');
 
 chrome.storage.sync.get('color', function (data) {

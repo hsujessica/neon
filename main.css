@@ -1,0 +1,53 @@
+body {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  font-family: 'Fira Sans', sans-serif;
+  font-weight: 300;
+}
+
+#color-btns {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  height: 128px;
+  width: 128px;
+  margin: 3px 0;
+}
+
+button {
+  height: 40px;
+  width: 40px;
+  margin-top: 3px;
+  border: none;
+  border-radius: 3px;
+  outline: none;
+}
+
+button:hover {
+  opacity: .5;
+}
+
+#active-color {
+  margin-bottom: 5px;
+  padding: 5px;
+  border-radius: 3px;
+  text-align: center;
+}
+
+#option-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: 3%;
+}
+
+#saves {
+  display: flex;
+  flex-direction: column;
+}
+
+tr {
+  display: flex;
+  justify-content: space-between;
+}

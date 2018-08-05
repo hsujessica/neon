@@ -3,15 +3,22 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
-chrome.tabs.query({
-  active: true,
-  currentWindow: true
-}, function (tabs) {
-  chrome.tabs.executeScript({
-    file: "./highlight.js",
-    allFrames: true
-  });
-});
+chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
+  if (changeInfo.status === 'complete' && tab.active) {
+
+    // do your things
+    chrome.tabs.query({
+      active: true,
+      currentWindow: true
+    }, function (tabs) {
+      chrome.tabs.executeScript({
+        file: './highlight.js',
+        allFrames: true
+      });
+    });
+
+  }
+})
 
 // chrome.storage.sync.get('color', function (data) {
 //   activeColor.style.backgroundColor = data.color;

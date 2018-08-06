@@ -26,22 +26,9 @@ function loadNotes () {
         let table = document.createElement('table');
         table.className = 'neon-highlights';
         if (saves.length) {
-          let blob = new Blob([JSON.stringify(saves)]);
-          let download = document.createElement('a');
-          download.innerHTML = 'download';
-          download.href = window.URL.createObjectURL(blob);
-          download.download = 'neon-highlights.json';
-          download.style.padding = '5px';
+          let download = createDownloadButton(saves);
           table.appendChild(download);
-          let clearNotes = document.createElement('a');
-          clearNotes.innerHTML = 'clear';
-          clearNotes.style.padding = '5px';
-          clearNotes.addEventListener('click', function () {
-            let userConfirm = confirm('are you sure?');
-            if (userConfirm) {
-              deleteAll(saves);
-            }
-          });
+          let clearNotes = createClearButton(saves);
           table.appendChild(clearNotes);
           for (let item of saves) {
             table.appendChild(createNoteRow(item));
@@ -60,8 +47,30 @@ function loadNotes () {
     }
   }
 }
-
 loadNotes();
+
+function createDownloadButton (saves) {
+  let blob = new Blob([JSON.stringify(saves)]);
+  let download = document.createElement('a');
+  download.innerHTML = 'download';
+  download.href = window.URL.createObjectURL(blob);
+  download.download = 'neon-highlights.json';
+  download.style.padding = '5px';
+  return download;
+}
+
+function createClearButton(saves) {
+  let clearNotes = document.createElement('a');
+  clearNotes.innerHTML = 'clear';
+  clearNotes.style.padding = '5px';
+  clearNotes.addEventListener('click', function () {
+    let userConfirm = confirm('are you sure?');
+    if (userConfirm) {
+      deleteAll(saves);
+    }
+  });
+  return clearNotes;
+}
 
 function deleteAll (keys) {
   let objectStore = db.transaction("highlights", "readwrite").objectStore("highlights");
@@ -100,17 +109,17 @@ function highlight (color) {
   if (!style) {
     style = document.createElement('style');
     document.head.appendChild(style);
-    style.sheet.insertRule(`::selection {background-color: ${color}}`)
+    style.sheet.insertRule(`::selection {background-color: ${color}}`);
   }
   else {
     style.sheet.deleteRule(0);
-    style.sheet.insertRule(`::selection {background-color: ${color}}`)
+    style.sheet.insertRule(`::selection {background-color: ${color}}`);
   }
   // document.addEventListener('selectionchange', function () {
   //     text = getHighlightedText();
   //     console.log(text);
   // });
-  document.addEventListener('keypress', function (event) {
+  document.addEventListener('keypress', function handleKeypress (event) {
     if (event.key === 'n') {
       let text = '';
       text = getHighlightedText();
@@ -120,7 +129,10 @@ function highlight (color) {
           if (event.key === 'Enter') {
             saveHighlight(text, color, note.value);
             let body = document.getElementsByTagName('body')[0];
-            body.removeChild(note);
+            let notes = document.getElementsByClassName('neon-highlight-note');
+            [...notes].forEach(n => {
+              body.removeChild(n);
+            })
           }
         });
       }
@@ -131,6 +143,7 @@ function highlight (color) {
 function takeNote () {
   let note = document.createElement('textarea');
   note.autofocus = '';
+  note.className = 'neon-highlight-note';
   note.style.cssText = 'position:fixed; rows:5; top:10px; left: 5px; width:200px; height:200px; z-index: 1000000; background-color: rgba(243,243,243,.9)';
   let body = document.getElementsByTagName('body')[0];
   body.appendChild(note);

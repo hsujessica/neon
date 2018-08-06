@@ -28,7 +28,7 @@ function loadNotes () {
         if (saves.length) {
           let download = createDownloadButton(saves);
           table.appendChild(download);
-          let clearNotes = createClearButton(saves);
+          let clearNotes = createClearButton();
           table.appendChild(clearNotes);
           for (let item of saves) {
             table.appendChild(createNoteRow(item));
@@ -38,6 +38,7 @@ function loadNotes () {
         else {
           let notification = document.createElement('p');
           notification.innerHTML = 'No past highlights';
+          notification.className = 'neon-notification-no-highlights';
           table.appendChild(notification);
         }
         table.style.cssText = 'display:block; font-size:10px; position:fixed; rows:5; top:10px; right:5px; width:300px; height:200px; z-index:1000000; background-color: rgba(243,243,243,.9); overflow:scroll';
@@ -59,29 +60,32 @@ function createDownloadButton (saves) {
   return download;
 }
 
-function createClearButton(saves) {
+function createClearButton() {
   let clearNotes = document.createElement('a');
   clearNotes.innerHTML = 'clear';
   clearNotes.style.padding = '5px';
   clearNotes.addEventListener('click', function () {
     let userConfirm = confirm('are you sure?');
     if (userConfirm) {
-      deleteAll(saves);
+      deleteAll();
     }
   });
   return clearNotes;
 }
 
-function deleteAll (keys) {
-  let objectStore = db.transaction("highlights", "readwrite").objectStore("highlights");
-  while (keys.length > 0) {
-    let key = keys.shift()["highlights"];
-    let request = objectStore.delete(key);
-    request.onsuccess = function (event) {
-      console.log(key + " deleted");
-    }
-    request.onerror = function (event) {
-      console.log(key + " delete failed!!!");
+function deleteAll () {
+  db.transaction('highlights', 'readwrite').objectStore('highlights').getAll().onsuccess = function (event) { //retrieving all past stored highlights / notes
+    let saves = event.target.result;
+    let objectStore = db.transaction('highlights', 'readwrite').objectStore('highlights');
+    while (saves.length > 0) {
+      let key = saves.shift()['highlights'];
+      let request = objectStore.delete(key);
+      request.onsuccess = function (event) {
+        console.log(key + ' deleted');
+      }
+      request.onerror = function (event) {
+        console.log(key + ' delete failed!!!');
+      }
     }
   }
   let body = document.getElementsByTagName('body')[0];
@@ -170,7 +174,20 @@ function saveHighlight (text, color, note) {
     let highlightsObjectStore = db.transaction('highlights', 'readwrite').objectStore('highlights');
     let newHighlight = {color: color, text: text, note: note, url: window.location.href, timestamp: new Date().toLocaleString()};
     highlightsObjectStore.add(newHighlight);
-    let table = document.getElementsByClassName('neon-highlights')[0];
-    table.appendChild(createNoteRow(newHighlight));
+    db.transaction('highlights').objectStore('highlights').getAll().onsuccess = function (event) { //retrieving all past stored highlights / notes
+      const saves = event.target.result;
+      // let table = document.createElement('table');
+      // table.className = 'neon-highlights';
+      let table = document.getElementsByClassName('neon-highlights')[0];
+      if (saves.length === 1) {
+        let notification = document.getElementsByClassName('neon-notification-no-highlights')[0];
+        table.removeChild(notification);
+        let download = createDownloadButton(saves);
+        table.appendChild(download);
+        let clearNotes = createClearButton(saves);
+        table.appendChild(clearNotes);
+      }
+      table.appendChild(createNoteRow(newHighlight));
+    }
   }
 }

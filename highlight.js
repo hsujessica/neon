@@ -3,10 +3,8 @@ chrome.storage.sync.get('color', function (data) {
   highlight(activeColor);
 });
 
-document.addEventListener('selectionchange', function () {
-    let text = '';
-    text = getHighlightedText();
-    console.log(text);
+function loadNotes () {
+  if (!document.getElementsByClassName('neon-highlights').length) {
     let indexdb = indexedDB.open('highlights', 3);
     indexdb.onerror = function (event) {
       alert('IndexedDB?!');
@@ -26,54 +24,68 @@ document.addEventListener('selectionchange', function () {
       db.transaction('highlights').objectStore('highlights').getAll().onsuccess = function (event) { //retrieving all past stored highlights / notes
         const saves = event.target.result;
         let table = document.createElement('table');
+        table.className = 'neon-highlights';
         if (saves.length) {
-          for (let item of saves) {
-            table.appendChild(displayNotes(item));
-            // console.log(`<td style='background-color:${item.color}'>${item.text}</td><td><a href='${item.url}'>Link</a></td><td>${item.timestamp}</td>`);
-          }
+          let blob = new Blob([JSON.stringify(saves)]);
           let download = document.createElement('a');
           download.innerHTML = 'download';
-          // download.href = window.URL.createObjectURL(saves);
-          download.download = JSON.stringify(saves);
+          download.href = window.URL.createObjectURL(blob);
+          download.download = 'neon-highlights.json';
+          download.style.padding = '5px';
           table.appendChild(download);
           let clearNotes = document.createElement('a');
           clearNotes.innerHTML = 'clear';
+          clearNotes.style.padding = '5px';
           clearNotes.addEventListener('click', function () {
             let userConfirm = confirm('are you sure?');
             if (userConfirm) {
-              // window.indexedDB.deleteDatabase('highlights'); // only want to delete obj store
-              // let body = document.getElementsByTagName('body')[0];
-              // body.removeChild(table);
+              deleteAll(saves);
             }
           });
           table.appendChild(clearNotes);
-
+          for (let item of saves) {
+            table.appendChild(createNoteRow(item));
+            // console.log(`<td style='background-color:${item.color}'>${item.text}</td><td><a href='${item.url}'>Link</a></td><td>${item.timestamp}</td>`);
+          }
         }
         else {
           let notification = document.createElement('p');
           notification.innerHTML = 'No past highlights';
           table.appendChild(notification);
         }
-        table.style.cssText = 'font-size:10px; position:fixed; rows:5; top:10px; right:5px; width:300px; height:200px; z-index:1000000; background-color: rgba(243,243,243,.9) overflow: scroll';
+        table.style.cssText = 'display:block; font-size:10px; position:fixed; rows:5; top:10px; right:5px; width:300px; height:200px; z-index:1000000; background-color: rgba(243,243,243,.9); overflow:scroll';
         let body = document.getElementsByTagName('body')[0];
         body.appendChild(table);
       };
     }
-});
+  }
+}
 
-function displayNotes (item) {
+loadNotes();
+
+function deleteAll (keys) {
+  let objectStore = db.transaction("highlights", "readwrite").objectStore("highlights");
+  while (keys.length > 0) {
+    let key = keys.shift()["highlights"];
+    let request = objectStore.delete(key);
+    request.onsuccess = function (event) {
+      console.log(key + " deleted");
+    }
+    request.onerror = function (event) {
+      console.log(key + " delete failed!!!");
+    }
+  }
+  let body = document.getElementsByTagName('body')[0];
+  let table = document.getElementsByClassName('neon-highlights')[0];
+  body.removeChild(table);
+  loadNotes();
+}
+
+function createNoteRow (item) {
   let save = document.createElement('tr');
   save.innerHTML = `<td style='background-color:${item.color}'>${item.text}</td><td>${item.timestamp}<br />${item.note}</td>`;
   return save;
 }
-
-// need to override highlight color after initial page load
-// window.onload = () => {
-// };
-
-// chrome.runtime.sendMessage({msg: "color"}, function (response) {
-//   console.log(response.color);
-// });
 
 function getHighlightedText () {
   let text;
@@ -83,7 +95,7 @@ function getHighlightedText () {
   return text;
 }
 
-function highlight (color)  {
+function highlight (color) {
   let style;
   if (!style) {
     style = document.createElement('style');
@@ -91,6 +103,7 @@ function highlight (color)  {
     style.sheet.insertRule(`::selection {background-color: ${color}}`)
   }
   else {
+    style.sheet.deleteRule(0);
     style.sheet.insertRule(`::selection {background-color: ${color}}`)
   }
   // document.addEventListener('selectionchange', function () {
@@ -102,7 +115,7 @@ function highlight (color)  {
       let text = '';
       text = getHighlightedText();
       if (text.length) {
-        let note = createNote();
+        let note = takeNote();
         note.addEventListener('keypress', function (event) {
           if (event.key === 'Enter') {
             saveHighlight(text, color, note.value);
@@ -115,7 +128,7 @@ function highlight (color)  {
   });
 }
 
-function createNote () {
+function takeNote () {
   let note = document.createElement('textarea');
   note.autofocus = '';
   note.style.cssText = 'position:fixed; rows:5; top:10px; left: 5px; width:200px; height:200px; z-index: 1000000; background-color: rgba(243,243,243,.9)';
@@ -144,5 +157,7 @@ function saveHighlight (text, color, note) {
     let highlightsObjectStore = db.transaction('highlights', 'readwrite').objectStore('highlights');
     let newHighlight = {color: color, text: text, note: note, url: window.location.href, timestamp: new Date().toLocaleString()};
     highlightsObjectStore.add(newHighlight);
+    let table = document.getElementsByClassName('neon-highlights')[0];
+    table.appendChild(createNoteRow(newHighlight));
   }
 }

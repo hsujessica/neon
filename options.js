@@ -1,6 +1,6 @@
 let colorDiv = document.getElementById('buttonDiv');
 
-const colors = ['#ffff22', '#ccff00', '#39ff14', '#a8ff00', '#11ffee', '#32ffcc', '#31d0cf', '#cf0663'];
+const palette = ['#ffff22', '#ccff00', '#39ff14', '#a8ff00', '#11ffee', '#32ffcc', '#f89902', '#57c1ff', '#ff00c3'];
 
 function constructOptions (colors) {
   for (let item of colors) {

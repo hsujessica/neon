@@ -3,7 +3,7 @@ chrome.storage.sync.get('color', function (data) {
   highlight(activeColor);
 });
 
-function loadNotes () {
+function loadNotes () { // shows table of past highlights and annotations
   if (!document.getElementsByClassName('neon-highlights').length) {
     let indexdb = indexedDB.open('highlights', 3);
     indexdb.onerror = function (event) {
@@ -26,13 +26,9 @@ function loadNotes () {
         let table = document.createElement('table');
         table.className = 'neon-highlights';
         if (saves.length) {
-          let download = createDownloadButton(saves);
-          table.appendChild(download);
-          let clearNotes = createClearButton();
-          table.appendChild(clearNotes);
+          createMenu(table, saves);
           for (let item of saves) {
             table.appendChild(createNoteRow(item));
-            // console.log(`<td style='background-color:${item.color}'>${item.text}</td><td><a href='${item.url}'>Link</a></td><td>${item.timestamp}</td>`);
           }
         }
         else {
@@ -41,7 +37,7 @@ function loadNotes () {
           notification.className = 'neon-notification-no-highlights';
           table.appendChild(notification);
         }
-        table.style.cssText = 'display:block; font-size:10px; position:fixed; rows:5; top:10px; right:5px; width:300px; height:200px; z-index:1000000; background-color: rgba(243,243,243,.9); overflow:scroll';
+        table.style.cssText = 'display:block; font-size:10px; position:fixed; rows:5; top:5px; right:5px; width:300px; max-height:300px; z-index:1000000; background-color: rgba(243,243,243,.9); overflow:scroll';
         let body = document.getElementsByTagName('body')[0];
         body.appendChild(table);
       };
@@ -50,10 +46,19 @@ function loadNotes () {
 }
 loadNotes();
 
+function createMenu (table, saves) {
+  let download = createDownloadButton(saves);
+  table.appendChild(download);
+  let clearNotes = createClearButton();
+  table.appendChild(clearNotes);
+  let toggleButton = createToggle();
+  table.appendChild(toggleButton);
+}
+
 function createDownloadButton (saves) {
   let blob = new Blob([JSON.stringify(saves)]);
   let download = document.createElement('a');
-  download.innerHTML = 'download';
+  download.innerHTML = 'DOWNLOAD';
   download.href = window.URL.createObjectURL(blob);
   download.download = 'neon-highlights.json';
   download.style.padding = '5px';
@@ -62,7 +67,7 @@ function createDownloadButton (saves) {
 
 function createClearButton() {
   let clearNotes = document.createElement('a');
-  clearNotes.innerHTML = 'clear';
+  clearNotes.innerHTML = 'CLEAR';
   clearNotes.style.padding = '5px';
   clearNotes.addEventListener('click', function () {
     let userConfirm = confirm('are you sure?');
@@ -73,7 +78,7 @@ function createClearButton() {
   return clearNotes;
 }
 
-function deleteAll () {
+function deleteAll () { // clears past highlights from page
   db.transaction('highlights', 'readwrite').objectStore('highlights').getAll().onsuccess = function (event) { //retrieving all past stored highlights / notes
     let saves = event.target.result;
     let objectStore = db.transaction('highlights', 'readwrite').objectStore('highlights');
@@ -94,8 +99,34 @@ function deleteAll () {
   loadNotes();
 }
 
+function createToggle () {
+  let toggle = document.createElement('a');
+  toggle.className = 'neon-highlight-toggle';
+  toggle.innerHTML = 'HIDE';
+  toggle.style.padding = '5px';
+  let show = true;
+  toggle.addEventListener('click', function () {
+    let saves = document.getElementsByClassName('neon-highlight-row');
+    if (show) {
+      for (let item of saves) {
+        item.style.display = 'none';
+      }
+      toggle.innerHTML = 'SHOW';
+    }
+    else {
+      for (let item of saves) {
+        item.style.display = 'table-row';
+      }
+      toggle.innerHTML = 'HIDE';
+    }
+    show = !show;
+  });
+  return toggle;
+}
+
 function createNoteRow (item) {
   let save = document.createElement('tr');
+  save.className = 'neon-highlight-row'
   save.innerHTML = `<td style='background-color:${item.color}'>${item.text}</td><td>${item.timestamp}<br />${item.note}</td>`;
   return save;
 }
@@ -119,10 +150,6 @@ function highlight (color) {
     style.sheet.deleteRule(0);
     style.sheet.insertRule(`::selection {background-color: ${color}}`);
   }
-  // document.addEventListener('selectionchange', function () {
-  //     text = getHighlightedText();
-  //     console.log(text);
-  // });
   document.addEventListener('keypress', function handleKeypress (event) {
     if (event.key === 'n') {
       let text = '';
@@ -182,10 +209,7 @@ function saveHighlight (text, color, note) {
       if (saves.length === 1) {
         let notification = document.getElementsByClassName('neon-notification-no-highlights')[0];
         table.removeChild(notification);
-        let download = createDownloadButton(saves);
-        table.appendChild(download);
-        let clearNotes = createClearButton(saves);
-        table.appendChild(clearNotes);
+        createMenu(table, saves);
       }
       table.appendChild(createNoteRow(newHighlight));
     }

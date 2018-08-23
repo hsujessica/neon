@@ -5,7 +5,6 @@ chrome.runtime.onInstalled.addListener(() => {
 
 chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
   if (changeInfo.status === 'complete' && tab.active) {
-
     // do your things
     chrome.tabs.query({
       active: true,
@@ -24,15 +23,6 @@ chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
 //   activeColor.style.backgroundColor = data.color;
 //   activeColor.setAttribute('value', data.color);
 // });
-
-chrome.runtime.onMessage.addListener(
-function(request, sender, sendResponse) {
-  console.log(sender.tab ?
-              "from a content script:" + sender.tab.url :
-              "from the extension");
-  if (request.msg == "color")
-    sendResponse({color: 'active' + activeColor});
-});
 
 // chrome.omnibox.onInputEntered.addListener(function(text) {
 //   // Encode user input for special characters , / ? : @ & = + $ #

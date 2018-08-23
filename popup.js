@@ -1,7 +1,7 @@
 let activeColor = document.getElementById('active-color');
 // let colors = document.getElementsByClassName('color');
 let btnDiv = document.getElementById('color-btns');
-const palette = ['#ffff22', '#ccff00', '#39ff14', '#a8ff00', '#11ffee', '#32ffcc', '#f89902', '#57c1ff', '#ff4492'];
+const palette = ['#ffff22', '#ccff00', '#39ff14', '#a8ff00', '#11ffee', '#32ffcc', '#f89902', '#57c1ff', '#ff00c3'];
 
 //comment out to start with no activeColor displayed.
 chrome.storage.sync.get('color', function (data) {

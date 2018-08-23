@@ -1,6 +1,6 @@
 let colorDiv = document.getElementById('buttonDiv');
 
-const colors = ['#ffff22', '#ccff00', '#39ff14', '#a8ff00', '#11ffee', '#32ffcc', '#31d0cf', '#cf0663'];
+const colors = ['#ffff22', '#ccff00', '#39ff14', '#a8ff00', '#11ffee', '#32ffcc', '#f89902', '#57c1ff', '#ff00c3'];
 
 function constructOptions (colors) {
   for (let item of colors) {
@@ -33,13 +33,13 @@ let request = indexedDB.open('highlights', 3);
     // };
   };
   request.onsuccess = function (event) {
-    db = event.target.result;
-    db.transaction('highlights').objectStore('highlights').getAll().onsuccess = function (event) {
-      const saves = event.target.result;
-      for (let item of saves) {
-        let save = document.createElement('tr');
-        save.innerHTML = `<td style='background-color:${item.color}'>${item.text}</td><td><a href='${item.url}'>Link</a></td><td>${item.timestamp}</td>`;
-        savesTable.appendChild(save);
-      }
-    };
+    // db = event.target.result;
+    // db.transaction('highlights').objectStore('highlights').getAll().onsuccess = function (event) {
+    //   const saves = event.target.result;
+    //   for (let item of saves) {
+    //     let save = document.createElement('tr');
+    //     save.innerHTML = `<td style='background-color:${item.color}'>${item.text}</td><td><a href='${item.url}'>Link</a></td><td>${item.timestamp}</td>`;
+    //     savesTable.appendChild(save);
+    //   }
+    // };
   }

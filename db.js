@@ -28,8 +28,6 @@ request.onupgradeneeded = function (event) {
 request.onsuccess = function (event) {
   db = event.target.result;
 
-
-
   db.onerror = function (event) {
     // Generic error handler for all errors targeted at this database's requests!
     alert('Database error: ' + event.target.errorCode);

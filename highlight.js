@@ -37,7 +37,7 @@ function loadNotes () { // shows table of past highlights and annotations
           notification.className = 'neon-notification-no-highlights';
           table.appendChild(notification);
         }
-        table.style.cssText = 'display:block; font-size:10px; position:fixed; rows:5; top:5px; right:5px; width:300px; max-height:300px; z-index:1000000; background-color: rgba(243,243,243,.9); overflow:scroll';
+        table.style.cssText = 'display:block; font-size:10px; position:fixed; rows:5; top:5px; right:5px; width:300px; max-height:300px; z-index:1000000000; background-color: rgba(243,243,243,.9); overflow:scroll';
         let body = document.getElementsByTagName('body')[0];
         body.appendChild(table);
       };
@@ -175,7 +175,7 @@ function takeNote () {
   let note = document.createElement('textarea');
   note.autofocus = '';
   note.className = 'neon-highlight-note';
-  note.style.cssText = 'position:fixed; rows:5; top:10px; left: 5px; width:200px; height:200px; z-index: 1000000; background-color: rgba(243,243,243,.9)';
+  note.style.cssText = 'position:fixed; rows:5; top:10px; left: 5px; width:200px; height:200px; z-index: 1000000000; background-color: rgba(243,243,243,.9)';
   let body = document.getElementsByTagName('body')[0];
   body.appendChild(note);
   return note;
